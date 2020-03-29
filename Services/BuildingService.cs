@@ -3,6 +3,8 @@ using estiaApi.Entities;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Bson;
+using System;
 
 namespace estiaApi.Services
 {
@@ -18,8 +20,18 @@ namespace estiaApi.Services
             _buildings = database.GetCollection<Building>(settings.BuildingsCollectionName);
         }
 
-        public List<Building> Get() =>
-            _buildings.Find(building => true).ToList();
+        public Tuple<long, List<Building>> Get(ListRequest param)
+        {
+            SortDefinition<Building> sortDefinition = new BsonDocument(param.SortValue[0], param.SortValue[1] == "ASC" ? 1 : -1);
+            var query = _buildings.Find(param.FilterValue);
+            var count = query.CountDocuments();
+            var data = query.Sort(sortDefinition)
+                .Skip(param.RangeValue[0])
+                .Limit(param.RangeValue[1] + 1 - param.RangeValue[0])
+                .ToList();
+
+            return new Tuple<long, List<Building>>(count, data);
+        }
 
         public Building Get(string id) =>
             _buildings.Find<Building>(building => building.Id == id).FirstOrDefault();

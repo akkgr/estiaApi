@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using estiaApi.Entities;
+using estiaApi.Models;
 using estiaApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,10 +24,9 @@ namespace estiaApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get([FromQuery] ListRequest param)
         {
-            var data = _buildingService.Get();
-            var count = data.Count;
+            var (count, data) = _buildingService.Get(param);
             Response.Headers.Add("Content-Range", $"{count}");
             return Ok(data);
         }

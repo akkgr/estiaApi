@@ -11,7 +11,7 @@ namespace estiaApi.Entities
         [BsonElement("street")]
         public string Street { get; set; }
         [BsonElement("streetnumber")]
-        public string StreetNumber { get; set; }
+        public string Streetnumber { get; set; }
         [BsonElement("postalcode")]
         public string PostalCode { get; set; }
         [BsonElement("country")]
