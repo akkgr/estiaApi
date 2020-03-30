@@ -2,9 +2,9 @@ using estiaApi.Models;
 using estiaApi.Entities;
 using MongoDB.Driver;
 using System.Collections.Generic;
-using System.Linq;
-using MongoDB.Bson;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace estiaApi.Services
 {
@@ -20,35 +20,37 @@ namespace estiaApi.Services
             _buildings = database.GetCollection<Building>(settings.BuildingsCollectionName);
         }
 
-        public Tuple<long, List<Building>> Get(ListRequest param)
+        public async Task<Tuple<long, List<Building>>> Get(ListRequest param, CancellationToken cancellationToken)
         {
-            SortDefinition<Building> sortDefinition = new BsonDocument(param.SortValue[0], param.SortValue[1] == "ASC" ? 1 : -1);
-            var query = _buildings.Find(param.FilterValue);
+            var query = _buildings.Find(param.FilterDefinition);
             var count = query.CountDocuments();
-            var data = query.Sort(sortDefinition)
+            var data = await query.Sort(param.SortDefinition)
                 .Skip(param.RangeValue[0])
                 .Limit(param.RangeValue[1] + 1 - param.RangeValue[0])
-                .ToList();
+                .ToListAsync(cancellationToken);
 
             return new Tuple<long, List<Building>>(count, data);
         }
 
-        public Building Get(string id) =>
-            _buildings.Find<Building>(building => building.Id == id).FirstOrDefault();
+        public async Task<Building> Get(string id, CancellationToken cancellationToken) =>
+            await _buildings.Find<Building>(building => building.Id == id).FirstOrDefaultAsync(cancellationToken);
 
-        public Building Create(Building building)
+        public async Task<Building> Create(Building building, CancellationToken cancellationToken)
         {
-            _buildings.InsertOne(building);
+            await _buildings.InsertOneAsync(building, null, cancellationToken);
             return building;
         }
 
-        public void Update(string id, Building building) =>
-            _buildings.ReplaceOne(b => b.Id == id, building);
+        public async Task Update(string id, Building building, CancellationToken cancellationToken)
+        {
+            ReplaceOptions options = null;
+            await _buildings.ReplaceOneAsync(b => b.Id == id, building, options, cancellationToken);
+        }
 
-        public void Remove(Building building) =>
-            _buildings.DeleteOne(b => b.Id == building.Id);
+        public async Task Remove(Building building, CancellationToken cancellationToken) =>
+            await _buildings.DeleteOneAsync(b => b.Id == building.Id, cancellationToken);
 
-        public void Remove(string id) =>
-            _buildings.DeleteOne(b => b.Id == id);
+        public async Task Remove(string id, CancellationToken cancellationToken) =>
+            await _buildings.DeleteOneAsync(b => b.Id == id, cancellationToken);
     }
 }

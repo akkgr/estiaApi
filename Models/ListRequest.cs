@@ -9,7 +9,7 @@ namespace estiaApi.Models
         public string Sort { get; set; }
         public string Range { get; set; }
 
-        public BsonDocument FilterValue
+        public BsonDocument FilterDefinition
         {
             get
             {
@@ -17,11 +17,12 @@ namespace estiaApi.Models
             }
         }
 
-        public string[] SortValue
+        public BsonDocument SortDefinition
         {
             get
             {
-                return JsonSerializer.Deserialize<string[]>(Sort);
+                var sort = JsonSerializer.Deserialize<string[]>(Sort);
+                return new BsonDocument(sort[0], sort[1] == "ASC" ? 1 : -1);
             }
         }
 
