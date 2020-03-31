@@ -25,8 +25,8 @@ namespace estiaApi.Services
             var query = _buildings.Find(param.FilterDefinition);
             var count = query.CountDocuments();
             var data = await query.Sort(param.SortDefinition)
-                .Skip(param.RangeValue[0])
-                .Limit(param.RangeValue[1] + 1 - param.RangeValue[0])
+                .Skip(param.PagingInfo[0])
+                .Limit(param.PagingInfo[1])
                 .ToListAsync(cancellationToken);
 
             return new Tuple<long, List<Building>>(count, data);

@@ -7,7 +7,7 @@ namespace estiaApi.Models
     {
         public string Filter { get; set; }
         public string Sort { get; set; }
-        public string Range { get; set; }
+        public string Page { get; set; }
 
         public BsonDocument FilterDefinition
         {
@@ -26,11 +26,12 @@ namespace estiaApi.Models
             }
         }
 
-        public int[] RangeValue
+        public int[] PagingInfo
         {
             get
             {
-                return JsonSerializer.Deserialize<int[]>(Range);
+                var p = JsonSerializer.Deserialize<int[]>(Page);
+                return new int[] { (p[0] - 1) * p[1], p[1] };
             }
         }
     }

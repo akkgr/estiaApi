@@ -28,8 +28,8 @@ namespace estiaApi.Controllers
         public async Task<IActionResult> Get([FromQuery] ListRequest param, CancellationToken cancellationToken)
         {
             var (count, data) = await _buildingService.Get(param, cancellationToken);
-            Response.Headers.Add("Content-Range", $"{count}");
-            return Ok(data);
+            // Response.Headers.Add("Content-Range", $"{count}");
+            return Ok(new { count, data });
         }
     }
 }

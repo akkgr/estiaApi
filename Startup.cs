@@ -44,7 +44,7 @@ namespace estiaApi
                         {
                             builder.AllowAnyOrigin();
                             builder.AllowAnyHeader();
-                            builder.WithExposedHeaders("Content-Range");
+                            // builder.WithExposedHeaders("Content-Range");
                             builder.WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
                         });
                     });
