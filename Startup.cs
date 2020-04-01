@@ -42,13 +42,22 @@ namespace estiaApi
                         options.AddPolicy("_myAllowSpecificOrigins",
                         builder =>
                         {
-                            builder.AllowAnyOrigin();
+                            builder.WithOrigins("http://localhost:3000");
                             builder.AllowAnyHeader();
                             // builder.WithExposedHeaders("Content-Range");
                             builder.WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
                         });
                     });
             services.AddControllers();
+
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "http://localhost:4000";
+                    options.RequireHttpsMetadata = false;
+
+                    options.Audience = "estiaApi";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,10 +72,9 @@ namespace estiaApi
 
             app.UseCors("_myAllowSpecificOrigins");
 
-            app.UseAuthentication();
-
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

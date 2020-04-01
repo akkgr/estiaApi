@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using estiaApi.Entities;
 using estiaApi.Models;
 using estiaApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace estiaApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class BuildingsController : ControllerBase
     {
