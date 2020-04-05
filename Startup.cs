@@ -1,18 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using estiaApi.Models;
 using estiaApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace estiaApi
@@ -26,7 +19,6 @@ namespace estiaApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<EstiaDatabaseSettings>(
@@ -44,7 +36,6 @@ namespace estiaApi
                         {
                             builder.WithOrigins("http://localhost:3000");
                             builder.AllowAnyHeader();
-                            // builder.WithExposedHeaders("Content-Range");
                             builder.WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
                         });
                     });
@@ -60,11 +51,8 @@ namespace estiaApi
                 });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // using Microsoft.AspNetCore.HttpOverrides;
-
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

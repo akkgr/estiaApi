@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using estiaApi.Entities;
 using estiaApi.Models;
 using estiaApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -30,8 +27,14 @@ namespace estiaApi.Controllers
         public async Task<IActionResult> Get([FromQuery] ListRequest param, CancellationToken cancellationToken)
         {
             var (count, data) = await _buildingService.Get(param, cancellationToken);
-            // Response.Headers.Add("Content-Range", $"{count}");
             return Ok(new { count, data });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
+        {
+            var data = await _buildingService.Get(id, cancellationToken);
+            return Ok(data);
         }
     }
 }
