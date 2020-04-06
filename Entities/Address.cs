@@ -10,9 +10,9 @@ namespace estiaApi.Entities
         public string Area { get; set; }
         [BsonElement("street")]
         public string Street { get; set; }
-        [BsonElement("streetnumber")]
+        [BsonElement("streetNumber")]
         public string Streetnumber { get; set; }
-        [BsonElement("postalcode")]
+        [BsonElement("postalCode")]
         public string PostalCode { get; set; }
         [BsonElement("country")]
         public string Country { get; set; }
