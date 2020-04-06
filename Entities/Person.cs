@@ -4,17 +4,18 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace estiaApi.Entities
 {
+    [BsonIgnoreExtraElements]
     public class Person
     {
-        [BsonElement("lastName")]
+        [BsonElement("lastname")]
         public string LastName { get; set; }
-        [BsonElement("firstName")]
-        public int FirstName { get; set; }
+        [BsonElement("firstname")]
+        public string FirstName { get; set; }
         [BsonElement("telephone")]
-        public int Telephone { get; set; }
+        public string Telephone { get; set; }
         [BsonElement("mobile")]
-        public int Mobile { get; set; }
+        public string Mobile { get; set; }
         [BsonElement("email")]
-        public int Email { get; set; }
+        public string Email { get; set; }
     }
 }
