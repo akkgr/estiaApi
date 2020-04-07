@@ -41,10 +41,11 @@ namespace estiaApi.Services
             return building;
         }
 
-        public async Task Update(string id, Building building, CancellationToken cancellationToken)
+        public async Task<Building> Update(string id, Building building, CancellationToken cancellationToken)
         {
             ReplaceOptions options = null;
             await _buildings.ReplaceOneAsync(b => b.Id == id, building, options, cancellationToken);
+            return building;
         }
 
         public async Task Remove(Building building, CancellationToken cancellationToken) =>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using estiaApi.Entities;
 using estiaApi.Models;
 using estiaApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -35,6 +36,13 @@ namespace estiaApi.Controllers
         {
             var data = await _buildingService.Get(id, cancellationToken);
             return Ok(data);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Get(string id, Building data, CancellationToken cancellationToken)
+        {
+            var result = await _buildingService.Update(id, data, cancellationToken);
+            return Ok(result);
         }
     }
 }
