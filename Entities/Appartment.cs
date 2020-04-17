@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace estiaApi.Entities
 {
     [BsonIgnoreExtraElements]
-    public class Appartment : Entity
+    public class Apartment : Entity
     {
         [BsonElement("buildingId")]
         [BsonRepresentation(BsonType.ObjectId)]

@@ -35,24 +35,24 @@ namespace estiaApi.Services
         public async Task<Building> Get(string id, CancellationToken cancellationToken) =>
             await _buildings.Find<Building>(building => building.Id == id).FirstOrDefaultAsync(cancellationToken);
 
-        public async Task<Building> Create(Building building, string user, CancellationToken cancellationToken)
+        public async Task<Building> Create(Building building, CancellationToken cancellationToken)
         {
-            building.CreatedBy = user;
+            building.CreatedBy = _currentUserService.Name;
             building.CreatedOn = DateTime.Now;
             await _buildings.InsertOneAsync(building, null, cancellationToken);
             return building;
         }
 
-        public async Task<Building> Update(string id, Building building, string user, CancellationToken cancellationToken)
+        public async Task<Building> Update(string id, Building building, CancellationToken cancellationToken)
         {
-            building.UpdatedBy = user;
+            building.UpdatedBy = _currentUserService.Name;
             building.UpdatedOn = DateTime.Now;
             ReplaceOptions options = null;
             await _buildings.ReplaceOneAsync(b => b.Id == id, building, options, cancellationToken);
             return building;
         }
 
-        public async Task Remove(string id, string user, CancellationToken cancellationToken)
+        public async Task Remove(string id, CancellationToken cancellationToken)
         {
             var filter = Builders<Building>.Filter.Eq(t => t.Id, id);
             var update = Builders<Building>.Update

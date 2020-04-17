@@ -34,6 +34,7 @@ namespace estiaApi
             var client = new MongoClient(Configuration.GetValue<string>("EstiaDatabaseSettings:ConnectionString"));
             services.AddSingleton<IMongoClient>(client);
             services.AddScoped<BuildingService>();
+            services.AddScoped<ApartmentService>();
 
             services.AddCors(options =>
                     {
