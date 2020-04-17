@@ -11,18 +11,18 @@ namespace estiaApi.Services
     public class BuildingService
     {
         private readonly IMongoCollection<Building> _buildings;
+        private readonly CurrentUserService _currentUserService;
 
-        public BuildingService(IEstiaDatabaseSettings settings)
+        public BuildingService(IEstiaDatabaseSettings settings, CurrentUserService currentUserService, IMongoClient client)
         {
-            var client = new MongoClient(settings.ConnectionString);
+            _currentUserService = currentUserService;
             var database = client.GetDatabase(settings.DatabaseName);
-
             _buildings = database.GetCollection<Building>(settings.BuildingsCollectionName);
         }
 
         public async Task<Tuple<long, List<Building>>> Get(ListRequest param, CancellationToken cancellationToken)
         {
-            var query = _buildings.Find(param.FilterDefinition);
+            var query = _buildings.Find(param.FilterDefinition & Builders<Building>.Filter.Eq(t => t.Deleted, false));
             var count = query.CountDocuments();
             var data = await query.Sort(param.SortDefinition)
                 .Skip(param.PagingInfo[0])
@@ -35,23 +35,31 @@ namespace estiaApi.Services
         public async Task<Building> Get(string id, CancellationToken cancellationToken) =>
             await _buildings.Find<Building>(building => building.Id == id).FirstOrDefaultAsync(cancellationToken);
 
-        public async Task<Building> Create(Building building, CancellationToken cancellationToken)
+        public async Task<Building> Create(Building building, string user, CancellationToken cancellationToken)
         {
+            building.CreatedBy = user;
+            building.CreatedOn = DateTime.Now;
             await _buildings.InsertOneAsync(building, null, cancellationToken);
             return building;
         }
 
-        public async Task<Building> Update(string id, Building building, CancellationToken cancellationToken)
+        public async Task<Building> Update(string id, Building building, string user, CancellationToken cancellationToken)
         {
+            building.UpdatedBy = user;
+            building.UpdatedOn = DateTime.Now;
             ReplaceOptions options = null;
             await _buildings.ReplaceOneAsync(b => b.Id == id, building, options, cancellationToken);
             return building;
         }
 
-        public async Task Remove(Building building, CancellationToken cancellationToken) =>
-            await _buildings.DeleteOneAsync(b => b.Id == building.Id, cancellationToken);
-
-        public async Task Remove(string id, CancellationToken cancellationToken) =>
-            await _buildings.DeleteOneAsync(b => b.Id == id, cancellationToken);
+        public async Task Remove(string id, string user, CancellationToken cancellationToken)
+        {
+            var filter = Builders<Building>.Filter.Eq(t => t.Id, id);
+            var update = Builders<Building>.Update
+                .Set(t => t.Deleted, true)
+                .Set(t => t.DeletedBy, _currentUserService.Name)
+                .Set(t => t.DeletedOn, DateTime.Now);
+            await _buildings.UpdateOneAsync(filter, update, null, cancellationToken);
+        }
     }
 }

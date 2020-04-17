@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 
 namespace estiaApi
 {
@@ -21,13 +22,18 @@ namespace estiaApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+            services.AddScoped<CurrentUserService>();
+
             services.Configure<EstiaDatabaseSettings>(
                 Configuration.GetSection(nameof(EstiaDatabaseSettings)));
 
             services.AddSingleton<IEstiaDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<EstiaDatabaseSettings>>().Value);
 
-            services.AddSingleton<BuildingService>();
+            var client = new MongoClient(Configuration.GetValue<string>("EstiaDatabaseSettings:ConnectionString"));
+            services.AddSingleton<IMongoClient>(client);
+            services.AddScoped<BuildingService>();
 
             services.AddCors(options =>
                     {

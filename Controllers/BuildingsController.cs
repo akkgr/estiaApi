@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using estiaApi.Entities;
@@ -38,11 +39,29 @@ namespace estiaApi.Controllers
             return Ok(data);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Get(string id, Building data, CancellationToken cancellationToken)
+        [HttpPost("")]
+        public async Task<IActionResult> Post(Address data, CancellationToken cancellationToken)
         {
-            var result = await _buildingService.Update(id, data, cancellationToken);
+            var building = new Building { Address = data };
+            var userName = User.FindFirstValue("name");
+            var result = await _buildingService.Create(building, userName, cancellationToken);
             return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(string id, Building data, CancellationToken cancellationToken)
+        {
+            var userName = User.FindFirstValue("name");
+            var result = await _buildingService.Update(id, data, userName, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id, CancellationToken cancellationToken)
+        {
+            var userName = User.FindFirstValue("name");
+            await _buildingService.Remove(id, userName, cancellationToken);
+            return Ok();
         }
     }
 }
