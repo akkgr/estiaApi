@@ -22,5 +22,8 @@ namespace estiaApi.Entities
 
         [BsonElement("owner")]
         public Person Owner { get; set; }
+
+        [BsonIgnore]
+        public string BuildingTitle { get; set; }
     }
 }

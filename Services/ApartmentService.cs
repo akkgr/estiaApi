@@ -11,6 +11,7 @@ namespace estiaApi.Services
     public class ApartmentService
     {
         private readonly IMongoCollection<Apartment> _apartments;
+        private readonly IMongoCollection<Building> _buildings;
         private readonly CurrentUserService _currentUserService;
 
         public ApartmentService(IEstiaDatabaseSettings settings, CurrentUserService currentUserService, IMongoClient client)
@@ -18,6 +19,7 @@ namespace estiaApi.Services
             _currentUserService = currentUserService;
             var database = client.GetDatabase(settings.DatabaseName);
             _apartments = database.GetCollection<Apartment>(settings.ApartmentsCollectionName);
+            _buildings = database.GetCollection<Building>(settings.BuildingsCollectionName);
         }
 
         public async Task<Tuple<long, List<Apartment>>> Get(ListRequest param, CancellationToken cancellationToken)
@@ -32,8 +34,13 @@ namespace estiaApi.Services
             return new Tuple<long, List<Apartment>>(count, data);
         }
 
-        public async Task<Apartment> Get(string id, CancellationToken cancellationToken) =>
-            await _apartments.Find<Apartment>(a => a.Id == id).FirstOrDefaultAsync(cancellationToken);
+        public async Task<Apartment> Get(string id, CancellationToken cancellationToken)
+        {
+            var apartment = await _apartments.Find<Apartment>(a => a.Id == id).FirstOrDefaultAsync(cancellationToken);
+            var building = await _buildings.Find<Building>(a => a.Id == apartment.BuildingId).FirstOrDefaultAsync(cancellationToken);
+            apartment.BuildingTitle = $"{building.Address.Street} {building.Address.Streetnumber}";
+            return apartment;
+        }
 
         public async Task<Apartment> Create(Apartment building, CancellationToken cancellationToken)
         {
@@ -43,13 +50,13 @@ namespace estiaApi.Services
             return building;
         }
 
-        public async Task<Apartment> Update(string id, Apartment building, CancellationToken cancellationToken)
+        public async Task<Apartment> Update(string id, Apartment apartment, CancellationToken cancellationToken)
         {
-            building.UpdatedBy = _currentUserService.Name;
-            building.UpdatedOn = DateTime.Now;
+            apartment.UpdatedBy = _currentUserService.Name;
+            apartment.UpdatedOn = DateTime.Now;
             ReplaceOptions options = null;
-            await _apartments.ReplaceOneAsync(b => b.Id == id, building, options, cancellationToken);
-            return building;
+            await _apartments.ReplaceOneAsync(b => b.Id == id, apartment, options, cancellationToken);
+            return apartment;
         }
 
         public async Task Remove(string id, CancellationToken cancellationToken)

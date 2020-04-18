@@ -66,8 +66,8 @@ namespace estiaApi.Controllers
         [HttpGet("{id}/apartments")]
         public async Task<IActionResult> GetApartments(string id, [FromQuery] ListRequest param, CancellationToken cancellationToken)
         {
-            var data = await _apartmentService.GetByBuilding(id, param, cancellationToken);
-            return Ok(data);
+            var (count, data) = await _apartmentService.GetByBuilding(id, param, cancellationToken);
+            return Ok(new { count, data });
         }
     }
 }
