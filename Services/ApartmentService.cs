@@ -38,7 +38,7 @@ namespace estiaApi.Services
         {
             var apartment = await _apartments.Find<Apartment>(a => a.Id == id).FirstOrDefaultAsync(cancellationToken);
             var building = await _buildings.Find<Building>(a => a.Id == apartment.BuildingId).FirstOrDefaultAsync(cancellationToken);
-            apartment.BuildingTitle = $"{building.Address.Street} {building.Address.Streetnumber}";
+            apartment.BuildingTitle = $"{building.Address.Street} {building.Address.Streetnumber}, {building.Address.Area}";
             return apartment;
         }
 
