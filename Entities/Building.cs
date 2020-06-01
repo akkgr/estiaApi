@@ -13,6 +13,7 @@ namespace estiaApi.Entities
         public Building()
         {
             Providers = new List<Provider>();
+            Managers = new List<Person>();
         }
 
         [BsonElement("address")]
@@ -31,7 +32,7 @@ namespace estiaApi.Entities
         public DateTime ManagementEnd { get; set; }
 
         [BsonElement("reserve")]
-        public bool Reserve { get; set; }
+        public decimal Reserve { get; set; }
 
         [BsonElement("heatingType")]
         [BsonRepresentation(BsonType.String)]
@@ -41,7 +42,7 @@ namespace estiaApi.Entities
         public bool CaloriesCounter { get; set; }
 
         [BsonElement("closedApartmentParticipation")]
-        public bool ClosedApartmentParticipation { get; set; }
+        public decimal ClosedApartmentParticipation { get; set; }
 
         [BsonElement("litersPerCm")]
         public decimal LitersPerCm { get; set; }
@@ -51,5 +52,8 @@ namespace estiaApi.Entities
 
         [BsonElement("providers")]
         public List<Provider> Providers { get; set; }
+
+        [BsonElement("managers")]
+        public List<Person> Managers { get; set; }
     }
 }
